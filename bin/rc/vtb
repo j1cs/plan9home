@@ -1,0 +1,2 @@
+#!/bin/rc
+vt -bx -f /lib/font/bit/pelm/unicode.9x24.font 

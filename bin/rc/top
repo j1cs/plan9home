@@ -1,0 +1,96 @@
+#!/bin/rc
+# top
+rfork en
+
+flagfmt='d interval,m maxlines'
+args=''
+
+old=/tmp/top.$pid.old
+new=/tmp/top.$pid.new
+out=/tmp/top.$pid.out
+
+int=2
+max=20
+len=()
+
+fn usage{
+	aux/usage
+	exit usage
+}
+fn isfloat{
+	echo $1 | grep -s '^[0-9\.]+$'
+}
+fn isnum{
+	echo $1 | grep -s '^[0-9]+$'
+}
+fn get{
+	grep . */status |
+	sed '
+		s!/status:! !
+		s! +! !g
+	'
+}
+fn clear{
+	awk 'END { for(i = 0; i < '$len'; i++) printf "\x08" }' </dev/null
+}
+fn sigint{
+	rm -f $old $new $out
+	exit
+}
+fn top{
+	get | tee $new | join - $old |
+	awk '
+	{
+		newusr = $5
+		newsys = $6
+		oldusr = $17
+		oldsys = $18
+		delta = newusr + newsys - (oldusr + oldsys)
+		pid = $1
+		name = $2
+		user = $3
+		state = $4
+		mem = $11
+		usr = newusr / 1000
+		sys = newsys / 1000
+		printf("%-10s %8s %6s %4ld:%.2ld %3ld:%.2ld %8ldK %-8s %s\n",
+			user, pid, delta,
+			usr / 60, usr % 60,
+			sys / 60, sys % 60,
+			mem, state, name)
+	}
+	' |
+	sort -nr +2 -3 | sed $max^q
+	mv $new $old
+}
+
+if(! ifs=() eval `{aux/getflags $*})
+	usage
+if(~ $#flagd 1){
+	if(! isfloat $flagd)
+		usage
+	int=$flagd
+}
+if(~ $#flagm 1){
+	if(! isnum $flagm)
+		usage
+	max=$flagm
+}
+cd /proc
+ramfs
+get >$old
+sleep $int
+
+while(){
+	{
+		echo
+		echo top:
+		top
+	} >$out
+	if(~ $#len 1)
+		clear
+	len=`{wc -r <$out}
+	cat $out
+	sleep $int
+}
+

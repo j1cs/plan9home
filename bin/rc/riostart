@@ -1,0 +1,4 @@
+#!/bin/rc
+window 0,0,161,117 stats -lmisceb
+window 161,0,560,117 faces -i
+window 0,0,114,1600 acme -l $home/acme.dump

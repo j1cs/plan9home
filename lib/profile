@@ -1,0 +1,37 @@
+bind -a $home/bin/rc /bin
+bind -a $home/bin/$cputype /bin
+if(! syscall create /tmp/xxx 1 0666 >[2]/dev/null)
+	ramfs	# in case we're running off a cd
+#font=/lib/font/bit/terminus/terminus.12.font
+font=/lib/font/bit/pelm/unicode.9.font
+webfs
+plumber
+switch($service){
+case terminal
+	if(! webcookies >[2]/dev/null)
+		webcookies -f /tmp/webcookies
+
+	echo -n accelerated > '#m/mousectl'
+	echo -n 'res 3' > '#m/mousectl'
+	prompt=(`{cat /dev/user}^@^`{cat /dev/sysname}^: ^`{ pwd }^'% ' '	')
+	fn cd { builtin cd $* && prompt=(`{cat /dev/user}^@^`{cat /dev/sysname}^: ^`{ pwd }^'% ' '	') }
+	fn `{cat /dev/user}^@^`{cat /dev/sysname}: { $* }
+	layout
+	nh
+	dlisten
+	rio -s -b -i riostart
+case cpu
+	bind /mnt/term/dev/cons /dev/cons
+	bind -q /mnt/term/dev/consctl /dev/consctl
+	>[2] /dev/null {
+		cp /dev/sysname /mnt/term/dev/label
+		if(wsys=`{cat /mnt/term/env/wsys})
+			wsys=/mnt/term^$wsys
+	} 
+	bind -a /mnt/term/dev /dev
+	prompt=('cpu% ' '	')
+	fn cpu%{ $* }
+	rio -s -b -i riostart
+case con
+	prompt=('cpu% ' '	')
+}

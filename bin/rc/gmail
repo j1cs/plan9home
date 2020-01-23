@@ -1,0 +1,2 @@
+#!/bin/rc
+upas/fs -f /imaps/imap.gmail.com/$1

@@ -1,0 +1,9 @@
+#!/bin/rc
+sysupdate
+cd / ; . /sys/lib/rootstub
+cd /sys/src
+mk nuke
+mk install 
+cd 9/pc64
+mk nuke
+mk install

@@ -1,0 +1,61 @@
+#!/bin/rc
+
+# emulate hpost -m / http://ix.io f:1@/dev/snarf
+#<mischief> i have a script which is modified hget  [12:57]
+#<mischief> hget is incompatible with it.
+#<mischief> http://ix.io/1mTq
+#<mischief> it's just called ix.
+#<mischief> contrary to the comment, it does not paste /dev/snarf, but only stdin or the optional file argument.
+#<mischief> you can theoretically post images there as i said
+#<mischief> topng < /dev/screen | ix # "should" work  [13:00]
+#<mischief> like http://ix.io/1pMQ
+#<mischief> beware of the weird content-type though
+#<mischief> it sends it as text/plain
+#<mischief> it is clearly not though :)
+#joe9: fn ixs {ix /dev/snarf|tee /dev/snarf} # an alias that I like to use
+
+rfork e
+
+flagfmt=''
+args='[file]'
+ix=http://ix.io
+webfs=/mnt/web
+
+if(! ifs=() eval `{aux/getflags $*}){
+	aux/usage
+	exit usage
+}
+
+switch($#*){
+case 0
+	file=/fd/0
+case 1
+	file=$1
+case *
+	aux/usage
+	exit usage
+}
+
+basename=`{basename $file}
+
+cr=`{echo x | tr x '\015'}
+
+<[4]$file <[3=0] <>$webfs/clone {
+	d=/mnt/web/^`{sed 1q}
+	echo -n baseurl $ix >[1=0]
+	echo -n url / >[1=0]
+	echo -n headers 'Content-Type: multipart/form-data; boundary=HJBOUNDARY' >[1=0]
+	echo -n request POST >[1=0]
+	>$d/postbody {
+		echo '--HJBOUNDARY'^$cr
+		echo 'Content-Disposition: form-data; filename="^$basename^"; name="f:1"'^$cr
+		echo $cr
+		cat <[0=4]
+		echo $cr
+		echo '--HJBOUNDARY--'^$cr
+	}
+
+	<$d/body {
+		exec cat
+	}
+}

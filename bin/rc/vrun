@@ -1,0 +1,9 @@
+#!/bin/rc
+#dd -if /dev/zero -of alpine/alp.img -bs 1024 -count 1 -oseek 20971520
+if (test -e '#X'/0/ctl) {
+	echo "killing vmx"
+	echo quit >'#X/0/ctl'
+}
+cat /sys/lib/kbmap/us > /dev/kbmap
+font=/lib/font/bit/vga/vga.font
+vmx -M 1024M -n ether0 -v vesa:800x600 -d vmx/vm/disk1 -m vmx/alpine-3.10.0/initramfs-virt vmx/alpine-3.10.0/vmlinuz-virt 'root=/dev/vda3' 'rootfstype=ext4'

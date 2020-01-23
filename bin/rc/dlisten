@@ -1,0 +1,3 @@
+#!/bin/rc
+echo 'key proto=dp9ik dom=cirno user=glats !password=''''' >/mnt/factotum/ctl
+aux/listen1 -t tcp!*!17019 /rc/bin/service/tcp17019 &

@@ -1,0 +1,2 @@
+#!/bin/rc
+aux/listen1 -t 'tcp!*!564' exportfs -r /root
