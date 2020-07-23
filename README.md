@@ -6,8 +6,8 @@ To clone into your plna9front box you need to have installed https://github.com/
 
 configure your ssh key:
 
-auth/rsagen -t 'service=ssh role=client' >githubkey
-auth/rsa2ssh githubkey # put this into github management keys
+auth/rsagen -t 'service=ssh role=client' >githubkey  
+auth/rsa2ssh githubkey # put this into github management keys  
 cat githubkey >/mnt/factotum/ctl
 
 Then run
