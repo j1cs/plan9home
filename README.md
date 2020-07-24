@@ -15,7 +15,7 @@ To install it you can do this:
 ## Configure ssh key
 ```
 % auth/rsagen -t 'service=ssh role=client' >githubkey
-% auth/rsa2ssh githubkey # the reuslt you cat to put it in your git server (i.e github gpg and sshk key manager)
+% auth/rsa2ssh githubkey # the result put it in your git server (i.e github gpg and sshk key manager)
 % cat githubkey >/mnt/factotum/ctl
 ```
 Then run  
